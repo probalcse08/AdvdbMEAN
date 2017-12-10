@@ -12,12 +12,12 @@ mongoose.connect(config.database);
 
 // On Connection
 mongoose.connection.on('connected', () => {
-  console.log('Connected to database '+config.database);
+    console.log('Connected to database ' + config.database);
 });
 
- //On Error
+//On Error
 mongoose.connection.on('error', (err) => {
-  console.log('Database error: '+err);
+    console.log('Database error: ' + err);
 });
 
 const app = express();
@@ -48,80 +48,78 @@ app.use(upload());
 //console.log('Server Started !');
 
 // create a get request and send a response
-app.get("/upload",function(req,res){
-  res.sendFile(__dirname+"/demofile.html");
+app.get("/upload", function(req, res) {
+    res.sendFile(__dirname + "/demofile.html");
 });
 
 // create a post request (reloads the page)
-app.post("/",function(req,res){
-  if(req.files){
-    //console.log(req.files);
-    var file = req.files.filename;
-      filename = file.name;
-    file.mv('./upload/'+filename,function(err){
-      if(err)
-      {
-        console.log(err);
-        res.send("Error occured!");
-      }
+app.post("/", function(req, res) {
+    if (req.files) {
+        //console.log(req.files);
+        var file = req.files.filename;
+        filename = file.name;
+        file.mv('./upload/' + filename, function(err) {
+            if (err) {
+                console.log(err);
+                res.send("Error occured!");
+            }
 
-      // feed the data into the database
+            // feed the data into the database
 
-      var mongoose = require('mongoose');
-      var mongodb = require('mongodb');
-      var mongoClient = mongodb.MongoClient;
-      var dbname = 'mydb';
-      var collection_name = 'my_collection';
-      var url = 'mongodb://localhost:27017/'+dbname;
-      // connect for the mongoose
-      mongoose.connect(url,{useMongoClient:true});
-      mongoose.Promise = global.Promise;
+            var mongoose = require('mongoose');
+            var mongodb = require('mongodb');
+            var mongoClient = mongodb.MongoClient;
+            var dbname = 'mydb';
+            var collection_name = 'my_collection';
+            var url = 'mongodb://localhost:27017/' + dbname;
+            // connect for the mongoose
+            mongoose.connect(url, { useMongoClient: true });
+            mongoose.Promise = global.Promise;
 
-      var weather = mongoose.model('weather',
-      {
-        outlook: String,
-        temperature : Number,
-        humidity : Number,
-        windy : Boolean,
-        play : String
-      });
+            var weather = mongoose.model('weather', {
+                outlook: String,
+                temperature: Number,
+                humidity: Number,
+                windy: Boolean,
+                play: String
+            });
 
 
-      jsonObj = {}
+            jsonObj = {}
 
-      const csvFilePath='./upload/'+filename;
-      const csv=require('csvtojson')
-      csv()
-      .fromFile(csvFilePath)
-      .on('json',(jsonObj)=>{
-      // combine csv header row and csv line to a json object
-      // jsonObj.a ==> 1 or 4
-      console.log(jsonObj);
- 
-      var item = new weather(jsonObj);
-      item.save(function(err){
-      if(err)
-      console.log(err);
-      else
-      console.log('inserted !');
-  })
-  
+            const csvFilePath = './upload/' + filename;
+            const csv = require('csvtojson')
+            csv()
+                .fromFile(csvFilePath)
+                .on('json', (jsonObj) => {
+                    // combine csv header row and csv line to a json object
+                    // jsonObj.a ==> 1 or 4
+                    console.log(jsonObj);
+
+                    var item = new weather(jsonObj);
+                    item.save(function(err) {
+                        if (err)
+                            console.log(err);
+                        else
+                            console.log('inserted !');
+                    })
 
 
 
 
 
-})
-.on('done',(error)=>{
-    console.log('end')
-   // console.log(jsonObj.outlook);
-})
 
- })
+                })
+                .on('done', (error) => {
+                    console.log('end')
+                    // console.log(jsonObj.outlook);
+                })
 
-  }
+        })
 
-  console.log('File uploaded and fed into database');
+    }
+
+    console.log('File uploaded and fed into database');
 
 });
 
@@ -135,11 +133,11 @@ app.post("/",function(req,res){
 
 
 // Index Route
-app.get('/', (req, res) => {  
-  res.send('Invalid Endpoint');
+app.get('/', (req, res) => {
+    res.send('Invalid Endpoint');
 });
 
 // Start Server
 app.listen(port, () => {
-  console.log('Server started on port '+port);
+    console.log('Server started on port ' + port);
 });
